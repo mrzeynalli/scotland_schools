@@ -2,7 +2,7 @@
 import requests, json
 
 # create an object to call the API
-class PosscodeApi:
+class PostcodeApi:
 
     # create initialiser
     def __init__(self):
