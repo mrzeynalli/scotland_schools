@@ -1,5 +1,5 @@
 # import necessary libraries
-import requests, json
+import requests
 
 # create an object to call the API
 class PostcodeApi:
@@ -12,7 +12,7 @@ class PostcodeApi:
     def check_validity(self, p):
         
         val = self.api + '/postcodes/' + p + '/validate' # formulate validity endpoint
-        result = json.loads(requests.get(val).text)['result'] # get the request result
+        result = requests.get(val).json()['result'] # get the request result
 
         if result == False: # check if the entered postcode is valid
             print(f'Non-valid post code: {p}')
@@ -25,10 +25,7 @@ class PostcodeApi:
     def check_termination(self, p):
         
         ter = self.api + '/terminated_postcodes/' + p # formulate termination endpoint
-        ter_json = json.loads(requests.get(ter).text)
-        status = ter_json['status'] # get request status
-
-        if status == 200: # check if the entered postcode is terminated
+        if requests.get(ter).status_code == 200: # check if the entered postcode is terminated
             print(f'The postcode {p} is terminated.')
             return None
         
@@ -43,7 +40,7 @@ class PostcodeApi:
             
                 q = self.api + '/postcodes/' + pos # formulate the postcode query endpoint
 
-                result = json.loads(requests.get(q).text)['result'] # collect the result in a JSOnN format
+                result = requests.get(q).json()['result'] # collect the result in a JSOnN format
 
                 lat = result['latitude'] # latitude
                 lon = result['longitude'] # longtitude
@@ -51,3 +48,30 @@ class PostcodeApi:
                 zone = result['parliamentary_constituency'] # zone
 
                 return {'loc' : [lat,lon],  'city' : city, 'zone' : zone} # return the findings
+            
+    # create a function to request the bulk postcodes info
+    def get_bulk_pos_info(self, pos_bulk):
+        # Define the URL
+        url = self.api + '/postcodes/'
+
+        # Define the JSON payload
+        data = {
+            "postcodes": pos_bulk
+        }
+
+        # Set the headers
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # Send the POST request
+        response = requests.post(url, json=data, headers=headers)
+
+        # Check the response
+        if response.status_code == 200:
+            # The request was successful, and you can parse the response JSON
+            result = response.json()
+            print(result)
+        else:
+            # Handle the error
+            print(f"Error: {response.status_code} - {response.text}")
