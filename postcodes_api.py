@@ -51,27 +51,42 @@ class PostcodeApi:
             
     # create a function to request the bulk postcodes info
     def get_bulk_pos_info(self, pos_bulk):
-        # Define the URL
+
+        # define the URL
         url = self.api + '/postcodes/'
 
-        # Define the JSON payload
-        data = {
-            "postcodes": pos_bulk
-        }
+        # define the JSON payload
+        data = {"postcodes": pos_bulk}
 
-        # Set the headers
-        headers = {
-            "Content-Type": "application/json"
-        }
+        # set the headers
+        headers = {"Content-Type": "application/json"}
 
-        # Send the POST request
+        # send the POST request
         response = requests.post(url, json=data, headers=headers)
 
-        # Check the response
+        # check the response
         if response.status_code == 200:
-            # The request was successful, and you can parse the response JSON
-            result = response.json()
-            print(result)
+
+            # the request was successful, and you can parse the response JSON
+            result = response.json()['result']
+
+            # convert the result into a dictionary format
+            result_items = {
+                'locs' : [ (r['result']['latitude'], r['result']['longitude']) if r['result'] != None else None
+                          for r 
+                          in result],
+
+                'cities' : [r['result']['admin_district'] if r['result'] != None else None
+                            for r
+                            in result],
+
+                'zones' : [r['result']['parliamentary_constituency'] if r['result'] != None else None
+                           for r
+                           in result]
+            }
+            return result_items
+        
         else:
-            # Handle the error
+            # handle if error is encountered
             print(f"Error: {response.status_code} - {response.text}")
+            return None
