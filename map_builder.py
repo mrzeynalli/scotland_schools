@@ -92,12 +92,8 @@ for i in range(l):
     pupils = sch_df['Total pupils'].iloc[i] # total pupils
     type = sch_df['School Type'].iloc[i] # type of the school: secondary, primary, or special
 
-    try:
-        mag = dep_rates[pos] # magnitute
+    mag = dep_rates.get(pos, 3) # get the deprivation score as magnitutde; 3 if the postcode is not assigned a score
 
-    except: # some postcodes may not have deprivation score avaiable.
-        mag = 3 # average
-    
     # add circle markers pointing each school
     folium.CircleMarker(
         location=loc,
