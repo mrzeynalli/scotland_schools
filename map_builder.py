@@ -2,6 +2,7 @@
 import json, folium
 import pandas as pd
 from postcodes_api import PostcodeApi
+import os
 
 
 ### LOADING AND PROCESSING THE DATASETS
@@ -131,5 +132,11 @@ legend_html = """
 """
 m.get_root().html.add_child(folium.Element(legend_html))
 
+
+# Create the folder to save the map
+cwd = os.getcwd()
+folder = os.path.join(cwd,'map')
+
+os.makedirs(folder, exist_ok=True)
 # save the map as an HTML file
-m.save('scottish_schools.html')
+m.save(os.path.join(folder, 'scottish_schools_map.html'))
